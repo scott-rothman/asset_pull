@@ -95,10 +95,6 @@ function parseForTags(html_content, type) {
 }
 
 function buildDirectoryStructure(file_path) {
-  if(typeof file_path != 'string') {
-    console.log('Invalid file path');
-    return false;
-  }
   var folders = file_path.split('/'),
   newFolder = '';
   for (var i = 0; i < folders.length; i++) {
@@ -117,7 +113,8 @@ function buildDirectoryStructure(file_path) {
     }
     catch(err) {
       if(err.code != 'EEXIST') {
-        console.log(err.bold.red);
+        console.log(err.red);
+        return false;
       }
     }
   }
@@ -138,57 +135,84 @@ function cycleArray(file_list, type, url) {
     if (type == 'js') {
       if (typeof file_list[x] !== 'undefined' && typeof file_list[x] !== undefined) {
         if (file_list[x].indexOf('<script>') < 0 && file_list[x].indexOf('//') < 0 && file_list[x].indexOf(' src=') >= 0 && file_list[x].indexOf('.js') >= 0) {
-          //Account for src= and quote mark prefix
-          startPos = file_list[x].indexOf('src=') + 5;
-          //Account for .js and quote suffix
-          endPos = file_list[x].indexOf('.js') + 3;
-          source = url + '/' + file_list[x].substring(startPos,endPos);
-          destination = file_list[x].substring(startPos,endPos);
-          if (destination.charAt(0) == '/') {
-            destination.slice(1);
+          try {
+            //Account for src= and quote mark prefix
+            startPos = file_list[x].indexOf('src=') + 5;
+            //Account for .js and quote suffix
+            endPos = file_list[x].indexOf('.js') + 3;
+            source = url + '/' + file_list[x].substring(startPos,endPos);
+            destination = file_list[x].substring(startPos,endPos);
+            if (destination.charAt(0) == '/') {
+              destination.slice(1);
+            }  
           }
-          downloadFile(source, destination);
+          catch(err) {
+            console.log(err);
+            return false;
+          }
+          finally {
+            downloadFile(source, destination);  
+          }
         }
       }
     } else if (type == 'css') {
       if (typeof file_list[x] !== 'undefined' && typeof file_list[x] !== undefined) {
         if (file_list[x].indexOf('<link>') < 0 && file_list[x].indexOf(' href=') >= 0 && file_list[x].indexOf('.css') >= 0) {
-          //Account for href= and quote mark prefix
-          startPos = file_list[x].indexOf('href=') + 6;
-          //Account for .css and quote suffix
-          endPos = file_list[x].indexOf('.css') + 4;
-          source = url + '/' + file_list[x].substring(startPos,endPos);
-          destination = file_list[x].substring(startPos,endPos);
-          if (destination.charAt(0) == '/') {
-            destination.slice(1);
+          try {
+            //Account for href= and quote mark prefix
+            startPos = file_list[x].indexOf('href=') + 6;
+            //Account for .css and quote suffix
+            endPos = file_list[x].indexOf('.css') + 4;
+            source = url + '/' + file_list[x].substring(startPos,endPos);
+            destination = file_list[x].substring(startPos,endPos);
+            if (destination.charAt(0) == '/') {
+              destination.slice(1);
+            }  
           }
-          downloadFile(source, destination);
+          catch(err) {
+            console.log(err);
+            return false;
+          }
+          finally {
+            downloadFile(source, destination);  
+          }
         }    
       }
     } else if (type == 'img') {
       if (typeof file_list[x] !== 'undefined' && typeof file_list[x] !== undefined) {
         if (file_list[x].indexOf('//') < 0 ) {
-          //Account for href= and quote mark prefix
-          startPos = file_list[x].indexOf('src=') + 5;
-          //Account for .css and quote suffix
-          if (file_list[x].indexOf('.jpg') >= 0) {
-            endPos = file_list[x].indexOf('.jpg') + 4;  
-          } else if (file_list[x].indexOf('.png') >= 0) {
-            endPos = file_list[x].indexOf('.png') + 4;  
-          } else if (file_list[x].indexOf('.gif') >= 0) {
-            endPos = file_list[x].indexOf('.gif') + 4;  
+          try {
+            //Account for href= and quote mark prefix
+            startPos = file_list[x].indexOf('src=') + 5;
+            //Account for .css and quote suffix
+            if (file_list[x].indexOf('.jpg') >= 0) {
+              endPos = file_list[x].indexOf('.jpg') + 4;  
+            } else if (file_list[x].indexOf('.png') >= 0) {
+              endPos = file_list[x].indexOf('.png') + 4;  
+            } else if (file_list[x].indexOf('.gif') >= 0) {
+              endPos = file_list[x].indexOf('.gif') + 4;  
+            } else {
+              return false;
+            }
+            source = url + '/' + file_list[x].substring(startPos,endPos);
+            destination = file_list[x].substring(startPos,endPos);
+            if (destination.charAt(0) == '/') {
+              destination.slice(1);
+            }
           }
-          source = url + '/' + file_list[x].substring(startPos,endPos);
-          destination = file_list[x].substring(startPos,endPos);
-          if (destination.charAt(0) == '/') {
-            destination.slice(1);
+          catch(err) {
+            console.log(err);
+            return false;
           }
-          downloadImageFile(source, destination);
+          finally {
+            downloadImageFile(source, destination);
+          }
         }
       }
     }
     x++;
   }
+  return true;
 }
 
 function downloadFile(source, destination) {
