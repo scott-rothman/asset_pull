@@ -89,7 +89,7 @@ function parseForTags(html_content, type) {
   if (files_to_return.length > 0) {
     return files_to_return;  
   } else {
-    return false;
+    return 0;
   }
   
 }
