@@ -1,27 +1,29 @@
+var asset_pull = require('../../www');
+
 describe('#parseForTags', function(){
   it('it should successfully find a script tag', function() {
     var test_html_content = '<html><head><script src="path/to/file.js"></script></head></html>';
     var test_type = 'js';
-    parseForTags(test_html_content, test_type).should.be.Array;
-    parseForTags(test_html_content, test_type).length.should.equal(1);
+    asset_pull.parseForTags(test_html_content, test_type).should.be.Array;
+    asset_pull.parseForTags(test_html_content, test_type).length.should.equal(1);
   });
   it('it should successfully find a style tag', function() {
     var test_html_content = '<html><head><link href="path/to/file.js"></head></html>';
     var test_type = 'css';
-    parseForTags(test_html_content, test_type).should.be.Array;
-    parseForTags(test_html_content, test_type).length.should.equal(1);
+    asset_pull.parseForTags(test_html_content, test_type).should.be.Array;
+    asset_pull.parseForTags(test_html_content, test_type).length.should.equal(1);
   });
   it('it should successfully find a image tag', function() {
     var test_html_content = '<html><head><script src="path/to/file.js"></script></head><img src="path/to/image.jpg"></html>';
     var test_type = 'img';
-    parseForTags(test_html_content, test_type).should.be.Array;
-    parseForTags(test_html_content, test_type).length.should.equal(1);
+    asset_pull.parseForTags(test_html_content, test_type).should.be.Array;
+    asset_pull.parseForTags(test_html_content, test_type).length.should.equal(1);
 
   });
   it('it should return 0 if nothing found', function() {
     var test_html_content = '<html><head><script src="path/to/file.js"></script></head></html>';
     var test_type = 'css';
-    parseForTags(test_html_content, test_type).should.be.Number.and.equal(0);
+    asset_pull.parseForTags(test_html_content, test_type).should.be.Number.and.equal(0);
   });  
 });
 
@@ -74,14 +76,23 @@ describe('#cycleArray', function(){
 });
 
 describe('#downloadFile', function(){
-  it('it should successfully cycle through an array of image files', function() {
-    var test_file_list = [
-      '/path/to/image1.jpg', 
-      '/path/to/image2.png', 
-      '/path/to/image3.gif'
-    ];
-    var test_source = 'https://code.jquery.com/jquery-2.1.3.js';
-    var test_destination = 'http://google.com'
-    downloadFile(test_source, test_destination).should.not.throw();
+  it('it should successfully download a CSS file to the given location', function() {
+    var test_source = 'http://discover.com/discover/jscripts/acquisitions/mbox.js';
+    var test_destination = '/discover/jscripts/acquisitions/mbox.js';
+    downloadFile(test_source, test_destination).should.equal.true;
+  });
+
+  it('it should successfully download a JS file to the given location', function() {
+    var test_source = 'http://discover.com/discover/jscripts/acquisitions/mbox.js';
+    var test_destination = '/discover/jscripts/acquisitions/mbox.js';
+    downloadFile(test_source, test_destination).should.equal.true;
+  });
+});
+
+describe('#downloadImageFile', function(){
+  it('it should successfully download an image file to the given location', function() {
+    var test_source = 'http://discover.com/discover/jscripts/acquisitions/mbox.js';
+    var test_destination = '/discover/jscripts/acquisitions/mbox.js';
+    downloadFile(test_source, test_destination).should.equal.true;
   });
 });

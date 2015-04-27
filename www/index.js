@@ -140,7 +140,7 @@ function cycleArray(file_list, type, url) {
             startPos = file_list[x].indexOf('src=') + 5;
             //Account for .js and quote suffix
             endPos = file_list[x].indexOf('.js') + 3;
-            source = url + '/' + file_list[x].substring(startPos,endPos);
+            source = url + file_list[x].substring(startPos,endPos);
             destination = file_list[x].substring(startPos,endPos);
             if (destination.charAt(0) == '/') {
               destination.slice(1);
@@ -163,7 +163,7 @@ function cycleArray(file_list, type, url) {
             startPos = file_list[x].indexOf('href=') + 6;
             //Account for .css and quote suffix
             endPos = file_list[x].indexOf('.css') + 4;
-            source = url + '/' + file_list[x].substring(startPos,endPos);
+            source = url + file_list[x].substring(startPos,endPos);
             destination = file_list[x].substring(startPos,endPos);
             if (destination.charAt(0) == '/') {
               destination.slice(1);
@@ -217,32 +217,35 @@ function cycleArray(file_list, type, url) {
 
 function downloadFile(source, destination) {
   var file_contents = '';
+  var request = require('request');
   buildDirectoryStructure(destination);
   request(source, function(error, response, body){
     if (!error && response.statusCode == 200) {
-      //console.log(body);
       file_contents = body;
       if (destination.charAt(0) == '/') {
         destination = '../live_assets'+destination;  
       } else {
         destination = '../live_assets/'+destination;
       }
-      
       try {
         console.log('Writing to: ' + destination.cyan);
         fs.writeFileSync(destination, file_contents);
+        return true;
       }
       catch(err) {
         if (err.code != 'EEXIST') {
           console.log('Error writing file'.bold.red); 
           console.log('Trying to write to: '+destination);
           console.log(err);
+          return false;
         }
       }
     } else {
       console.log(error);
+      return false;
     }
   });
+  return true;
 }
 
 function downloadImageFile(source, destination) {
@@ -253,8 +256,6 @@ function downloadImageFile(source, destination) {
     }
   buildDirectoryStructure(destination);
   try {
-    
-    
     request(source).pipe(fs.createWriteStream(destination));
     console.log('Writing to: ' + destination.cyan);
   }
